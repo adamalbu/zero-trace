@@ -1,0 +1,81 @@
+[gd_scene load_steps=17 format=3 uid="uid://7slepn7ot5f"]
+
+[ext_resource type="Script" uid="uid://djsk1co4txhwt" path="res://enitites/player/player.gd" id="1_nfhfj"]
+[ext_resource type="PackedScene" uid="uid://cadjxmbyi8q1d" path="res://enitites/Imported.fbx" id="2_d1gyh"]
+[ext_resource type="Animation" uid="uid://dk7f4mcqgo4xj" path="res://animations/tpose.res" id="3_3phu5"]
+[ext_resource type="Animation" uid="uid://cduav23ofs5pe" path="res://animations/walk.res" id="4_eeiap"]
+[ext_resource type="Animation" uid="uid://bm40n4xk3mev4" path="res://animations/idle.res" id="4_fsb7d"]
+[ext_resource type="Animation" uid="uid://bl6rrypqigoxi" path="res://animations/walk_backwards.res" id="5_7v1u6"]
+[ext_resource type="Animation" uid="uid://cum7pn77fo60t" path="res://animations/strafe_left.res" id="6_gmqso"]
+[ext_resource type="Animation" uid="uid://dhv1y4h0cmlrf" path="res://animations/strafe_right.res" id="7_hr6jf"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_q1uda"]
+radius = 0.2890625
+height = 1.8054199
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_it7ut"]
+_data = {
+&"idle": ExtResource("4_fsb7d"),
+&"strafe_left": ExtResource("6_gmqso"),
+&"strafe_right": ExtResource("7_hr6jf"),
+&"tpose": ExtResource("3_3phu5"),
+&"walk": ExtResource("4_eeiap"),
+&"walk_backwards": ExtResource("5_7v1u6")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hr6jf"]
+animation = &"base/walk"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_myp5k"]
+animation = &"base/walk_backwards"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6dtuj"]
+animation = &"base/idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7v1u6"]
+animation = &"base/strafe_left"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gmqso"]
+animation = &"base/strafe_right"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_fsb7d"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_hr6jf")
+blend_point_0/pos = Vector2(0, -1)
+blend_point_1/node = SubResource("AnimationNodeAnimation_myp5k")
+blend_point_1/pos = Vector2(0, 1)
+blend_point_2/node = SubResource("AnimationNodeAnimation_6dtuj")
+blend_point_2/pos = Vector2(0, 0)
+blend_point_3/node = SubResource("AnimationNodeAnimation_7v1u6")
+blend_point_3/pos = Vector2(-1, 0)
+blend_point_4/node = SubResource("AnimationNodeAnimation_gmqso")
+blend_point_4/pos = Vector2(1, 0)
+snap = Vector2(0.5, 0.5)
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("animation_tree", "camera")]
+script = ExtResource("1_nfhfj")
+animation_tree = NodePath("CharacterBody/AnimationTree")
+camera = NodePath("Camera3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.90270996, 0)
+shape = SubResource("CapsuleShape3D_q1uda")
+
+[node name="CharacterBody" parent="." instance=ExtResource("2_d1gyh")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+
+[node name="AnimationTree" type="AnimationTree" parent="CharacterBody"]
+callback_mode_process = 2
+libraries = {
+&"base": SubResource("AnimationLibrary_it7ut")
+}
+tree_root = SubResource("AnimationNodeBlendSpace2D_fsb7d")
+anim_player = NodePath("../AnimationPlayer")
+parameters/blend_position = Vector2(-0.0027051568, 0.010988951)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterBody"]
+libraries = {
+&"base": SubResource("AnimationLibrary_it7ut")
+}
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, -8.726601e-05, -2.8744672e-08, 8.722578e-05, 0.999549, -0.030032577, 2.6495545e-06, 0.030032577, 0.999549, 4.4225155e-05, 1.6599009, -0.17520976)

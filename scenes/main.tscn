@@ -1,0 +1,139 @@
+[gd_scene load_steps=25 format=3 uid="uid://drf5nc3q1ua1v"]
+
+[ext_resource type="PackedScene" uid="uid://7slepn7ot5f" path="res://enitites/player/player.tscn" id="1_o5qli"]
+[ext_resource type="Resource" uid="uid://cslvcweyejh3c" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/default_camera_movement_component.tres" id="2_a8y0u"]
+[ext_resource type="Resource" uid="uid://iru8ynu04i00" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/default_camera_rotation_component.tres" id="3_jkv2x"]
+[ext_resource type="Resource" uid="uid://rp3mpjmisoyh" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/default_object_movement_component.tres" id="4_jbj1t"]
+[ext_resource type="Resource" uid="uid://c8ulad7utgrg7" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/pre_blur_processing_stage.tres" id="5_muem4"]
+[ext_resource type="Script" uid="uid://b4n1i7gnlrx1n" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/pre_blur_processor.gd" id="6_dp3eg"]
+[ext_resource type="Resource" uid="uid://ca45noqewsyvp" path="res://addons/SphynxMotionBlurToolkit/Guertin/guertin_experimental_blur_stage.tres" id="7_dp3eg"]
+[ext_resource type="Resource" uid="uid://cvb65hfs2lrxo" path="res://addons/SphynxMotionBlurToolkit/Guertin/guertin_neighbor_max_stage.tres" id="8_0ld40"]
+[ext_resource type="Resource" uid="uid://bidsfymvdyhek" path="res://addons/SphynxMotionBlurToolkit/Guertin/guertin_overlay_stage.tres" id="9_gqmmt"]
+[ext_resource type="Script" uid="uid://d3fmk1i3w3jho" path="res://addons/SphynxMotionBlurToolkit/Guertin/new_guertin_motion_blur.gd" id="10_jscy8"]
+[ext_resource type="Resource" uid="uid://dipvwksvqb3dm" path="res://addons/SphynxMotionBlurToolkit/Guertin/guertin_tile_max_x_stage.tres" id="11_yc10j"]
+[ext_resource type="Resource" uid="uid://bxfg45ubc2pv7" path="res://addons/SphynxMotionBlurToolkit/Guertin/guertin_tile_max_y_stage.tres" id="12_jscy8"]
+[ext_resource type="Resource" uid="uid://bqehecsdgt70s" path="res://addons/SphynxMotionBlurToolkit/Guertin/guertin_tile_variance_stage.tres" id="13_pm3ni"]
+[ext_resource type="Script" uid="uid://miqeye1gjimr" path="res://addons/SphynxMotionBlurToolkit/BaseClasses/mb_compositor.gd" id="14_2wyq8"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_a8y0u"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_og1vs"]
+width = 4096
+height = 4096
+generate_mipmaps = false
+noise = SubResource("FastNoiseLite_a8y0u")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2wyq8"]
+albedo_texture = SubResource("NoiseTexture2D_og1vs")
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_a8y0u"]
+sky_top_color = Color(0.45929635, 0.7490072, 0.9707901, 1)
+sky_horizon_color = Color(0.6354381, 0.8570078, 0.90948904, 1)
+ground_bottom_color = Color(0.44705883, 0.69411767, 0.84705883, 1)
+ground_horizon_color = Color(0.63529414, 0.85882354, 0.9098039, 1)
+
+[sub_resource type="Sky" id="Sky_jkv2x"]
+sky_material = SubResource("ProceduralSkyMaterial_a8y0u")
+
+[sub_resource type="Environment" id="Environment_o5qli"]
+background_mode = 2
+sky = SubResource("Sky_jkv2x")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.21
+ambient_light_energy = 0.12
+glow_enabled = true
+fog_mode = 1
+fog_sun_scatter = 0.45
+fog_density = 1.0
+fog_depth_curve = 0.0113619985
+fog_depth_begin = 0.0
+fog_depth_end = 534.8
+volumetric_fog_length = 1024.0
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_0wfyh"]
+auto_exposure_enabled = true
+auto_exposure_speed = 1.0
+dof_blur_amount = 0.55
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_vxglm"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("6_dp3eg")
+metadata/_custom_type_script = "uid://b4n1i7gnlrx1n"
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_a8y0u"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("10_jscy8")
+metadata/_custom_type_script = "uid://d3fmk1i3w3jho"
+
+[sub_resource type="Compositor" id="Compositor_yq6so"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_vxglm"), SubResource("CompositorEffect_a8y0u")])
+script = ExtResource("14_2wyq8")
+metadata/_custom_type_script = "uid://miqeye1gjimr"
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+material_override = SubResource("StandardMaterial3D_2wyq8")
+use_collision = true
+size = Vector3(32, 0.3, 32)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 2, 7)
+use_collision = true
+size = Vector3(4, 4, 0.3)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9, 2, 5)
+use_collision = true
+size = Vector3(4, 4, 0.3)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 2, 3)
+use_collision = true
+size = Vector3(4, 4, 0.3)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -7, 4, 5)
+use_collision = true
+size = Vector3(4, 4, 0.3)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 2, 6.35)
+use_collision = true
+size = Vector3(1.3000001, 4, 0.3)
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 3.5, 5)
+use_collision = true
+size = Vector3(4, 1, 0.3)
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 2, 3.6499999)
+use_collision = true
+size = Vector3(1.3000001, 4, 0.3)
+
+[node name="Player" parent="." instance=ExtResource("1_o5qli")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -7.450581e-09, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_o5qli")
+camera_attributes = SubResource("CameraAttributesPractical_0wfyh")
+compositor = SubResource("Compositor_yq6so")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.3971781, -0.8993074, 0.18301742, 0.6471196, 0.41584072, 0.6389933, -0.6507577, -0.13536003, 0.74712235, 0, 3, 0)
+shadow_enabled = true
